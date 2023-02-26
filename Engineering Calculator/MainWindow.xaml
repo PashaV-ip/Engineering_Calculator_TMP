@@ -5,17 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Engineering_Calculator"
         mc:Ignorable="d"
-        Title="Калькулятор" Height="450" Width="800">
+        Title="Калькулятор" Height="700" Width="600" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
             <RowDefinition Height="100"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock Background="LightGray" Margin="15,0" Name="TextBox_Scoreboard" Text="0" FontSize="40" VerticalAlignment="Center" TextAlignment="Right" Padding="30,0"/>
+        <TextBox Background="LightGray" Margin="15,0" IsReadOnly="True" Name="textHistory" 
+                   Text="" FontSize="40" VerticalAlignment="Center" 
+                   TextAlignment="Right" Padding="30,0"/>
+        <TextBox Grid.Row="1" Background="LightGray" Margin="15,0" IsReadOnly="True" Name="ResultScoreboard_TextBox" 
+                   Text="" FontSize="40" VerticalAlignment="Center" 
+                   TextAlignment="Right" Padding="30,0"/>
         
         <Grid Grid.Row="2" Margin="15">
             <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -26,31 +34,37 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <!--Цифры-->
-            <Button Content="1" Grid.Column="0" Grid.Row="2" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="2" Grid.Column="1" Grid.Row="2" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="3" Grid.Column="2" Grid.Row="2" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="4" Grid.Column="0" Grid.Row="1" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="5" Grid.Column="1" Grid.Row="1" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="6" Grid.Column="2" Grid.Row="1" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="7" Grid.Column="0" Grid.Row="0" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="8" Grid.Column="1" Grid.Row="0" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="9" Grid.Column="2" Grid.Row="0" FontSize="30" Click="Buttons_With_Numbers_Click"/>
-            <Button Content="0" Grid.Column="0" Grid.Row="3" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="1" Grid.Column="0" Grid.Row="4" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="2" Grid.Column="1" Grid.Row="4" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="3" Grid.Column="2" Grid.Row="4" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="4" Grid.Column="0" Grid.Row="3" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="5" Grid.Column="1" Grid.Row="3" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="6" Grid.Column="2" Grid.Row="3" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="7" Grid.Column="0" Grid.Row="2" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="8" Grid.Column="1" Grid.Row="2" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="9" Grid.Column="2" Grid.Row="2" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="0" Grid.Column="1" Grid.Row="5" FontSize="30" Click="Buttons_With_Numbers_Click"/>
             
             <!-- Функции -->
-            <Button Content="+/-" Grid.Column="1" Grid.Row="3" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
-            <Button Content="•" Grid.Column="2" Grid.Row="3" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
-            <Button Content="÷" Grid.Column="3" Grid.Row="0" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
-            <Button Content="×" Grid.Column="3" Grid.Row="1" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
-            <Button Content="-" Grid.Column="3" Grid.Row="2" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
-            <Button Content="+" Grid.Column="3" Grid.Row="3" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
-            <Button Content="=" Grid.Column="4" Grid.Row="3" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
-            <Button Content="→" Grid.Column="4" Grid.Row="2" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
-            <Button Content="C" Grid.Column="4" Grid.Row="0" FontSize="30" Click="Buttons_With_Primitive_Functions_Click" Background="IndianRed"/>
-            <Button Content="CE" Grid.Column="4" Grid.Row="1" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+            <Button Content="+/-" Grid.Column="0" Grid.Row="5" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="•" Grid.Column="2" Grid.Row="5" FontSize="30" Click="Buttons_With_Numbers_Click"/>
+            <Button Content="÷" Grid.Column="3" Grid.Row="2" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+            <Button Content="×" Grid.Column="3" Grid.Row="3" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+            <Button Content="-" Grid.Column="3" Grid.Row="4" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+            <Button Content="+" Grid.Column="3" Grid.Row="5" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+
+            <Button Content="√" Grid.Column="3" Grid.Row="1" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+            <Button Content="%" Grid.Column="1" Grid.Row="1" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+            <Button Content="x²" Grid.Column="2" Grid.Row="1" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+            <Button Content="1/x" Grid.Column="0" Grid.Row="1" FontSize="30" Click="Buttons_With_Primitive_Functions_Click"/>
+            
+            <!-- Служебные функции -->
+            <Button Content="=" Grid.Column="3" Grid.Row="0" FontSize="30" Click="Buttons_With_Official_Functions_Click"/>
+            <Button Content="→" Grid.Column="2" Grid.Row="0" FontSize="30" Click="Buttons_With_Official_Functions_Click"/>
+            <Button Content="C" Grid.Column="0" Grid.Row="0" FontSize="30" Click="Buttons_With_Official_Functions_Click" Background="IndianRed"/>
+            <Button Content="CE" Grid.Column="1" Grid.Row="0" FontSize="30" Click="Buttons_With_Official_Functions_Click"/>
         </Grid>
     </Grid>
 </Window>

@@ -22,288 +22,253 @@ namespace Engineering_Calculator
     public partial class MainWindow : Window
     {
         #region Свойства
-        private bool Decimal = false; //Десятичный - фиксирует является ли число десятичным.
-        private string NumberOne = ""; //Число первое
-        private string NumberTwo = ""; //Число второе
-        private string Function = ""; //Хранит функцию (Действие) над числами
+        private bool IsDecimal = false; // Переменная определяющая - является ли число десятичным
+        private bool IsNumberTwo = false; // Переменная определяющая - какое число вводит пользователь (Второе или первое) true - второе, false - первое
+
+        private string NumberOne = null; // Число номер 1
+        private string NumberTwo = null; // Число номер 2
+
+        private string CurrentFunction = ""; //Содержит функцию, которую нажал пользователь
         #endregion
         public MainWindow()
         {
             InitializeComponent();
         }
-        private void Buttons_With_Numbers_Click(object sender, RoutedEventArgs e)
+
+
+
+        private void AddNumber(string txt) // Метод добавляет в нужное число и строку результата символы из атрибута 'txt'
         {
-            Button button = (Button)sender; //Преобразует тип object переменной sender в тип Button переменной button
-            if(NumberOne == "") //Определение к какому числу относитя данный ввод числа.
+            if (IsNumberTwo)
             {
-                if (TextBox_Scoreboard.Text == "0" || TextBox_Scoreboard.Text == "") //Условие позволяет заменить первоначальный ноль на число
-                {
-                    TextBox_Scoreboard.Text = button.Content.ToString(); //Присваиваем содержимому Результирующей строки содержимое кнопки.
-                }
-                else
-                {
-                    TextBox_Scoreboard.Text += button.Content.ToString();
-                }
+                NumberTwo += txt;
+                ResultScoreboard_TextBox.Text = NumberTwo;
             }
             else
             {
-                if(NumberTwo == "" || TextBox_Scoreboard.Text == "0") //Условие позволяет заменить первоначальный ноль на число
-                {
-                    TextBox_Scoreboard.Text = button.Content.ToString();
-                    NumberTwo = TextBox_Scoreboard.Text;
-                }
-                else
-                {
-                    TextBox_Scoreboard.Text += button.Content.ToString();
-                    NumberTwo = TextBox_Scoreboard.Text;
-                }
+                NumberOne += txt;
+                ResultScoreboard_TextBox.Text = NumberOne;
             }
         }
-        private void Buttons_With_Primitive_Functions_Click(object sender, RoutedEventArgs e)
+        private void SetNumber(string txt) // Метод ставит в нужное число и строку результата символы из атрибута 'txt'
+        {
+            if (IsNumberTwo)
+            {
+                NumberTwo = txt;
+                ResultScoreboard_TextBox.Text = NumberTwo;
+            }
+            else
+            {
+                NumberOne = txt;
+                ResultScoreboard_TextBox.Text = NumberOne;
+            }
+        }
+        private void Buttons_With_Numbers_Click(object sender, RoutedEventArgs e) //Обработчик нажатия на все кнопки, работающие с данным числом в результирующей строке, в том числе и цифры
+        {
+            var txt = ((Button)sender).Content.ToString(); //в переменную txt добавляется не сама кнопка, а текст с нажатой кнопки
+            {
+                if(IsDecimal && txt == "•") // Предотвращает вторую запятую в числе
+                {
+                    MessageBox.Show("Число десятичное!","Ошибка..", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                if(txt == "•") // Если пользователь нажал на точку и число не было десятичным, то число переводится в разряд десятичных и содержимое txt заменяется на ","
+                {
+                    IsDecimal = true;
+                    txt = ",";
+                }
+            }
+
+            if (txt == "+/-") // Если пользователь нажал на кнопку "+/-", то выполняется следующая часть кода
+            {
+                if (ResultScoreboard_TextBox.Text.Length > 0) //Проверка, если результирующее поле не пустое - то..
+                    if(ResultScoreboard_TextBox.Text[0] == '-') //Условие позволяет переводить число из отрицательного в положительный и обратно
+                    {
+                        ResultScoreboard_TextBox.Text = ResultScoreboard_TextBox.Text.Substring(1, ResultScoreboard_TextBox.Text.Length - 1);
+                    }
+                    else
+                    {
+                        ResultScoreboard_TextBox.Text = "-" + ResultScoreboard_TextBox.Text;
+                    }
+                    //###########################################################################################################//
+                    //###                             (Почему нельзя использовать пример ниже)                                ###//
+                    //###########################################################################################################//
+                    //###                                                                                                     ###//
+                    //###    ResultScoreboard_TextBox.Text = (double.Parse(ResultScoreboard_TextBox.Text) * -1).ToString();   ###//
+                    //###                                                                                                     ###//
+                    //###########################################################################################################//
+                    //###                                                                                                     ###//
+                    //###   Данное условие позволяет избегать некоторых ошибок, например - (Данное действие можно выполнить   ###//
+                    //###   только если поле не пустое, но пользователь может написать запятую, а потом нажать "-", что       ###//
+                    //###   приведёт к крашу программы, а что бы не делать ещё больше разных условий, лучше применить         ###//
+                    //###   этот метод с условием "...if(ResultScoreboard_TextBox.Text[0] == '-')..." во избежание лишней     ###//
+                    //###   рутины с реализацией..                                                                            ###//
+                    //###                                                                                                     ###//
+                    //###########################################################################################################//
+
+
+                SetNumber(ResultScoreboard_TextBox.Text);
+                return;
+            }
+            AddNumber(txt);
+        }
+
+        private void Buttons_With_Primitive_Functions_Click(object sender, RoutedEventArgs e) // Обработчик нажатия на математические функции
+        {
+            if (IsNumberTwo) //Условие позволяет произвести расчёт, если пользователь после ввода второго числа нажмёт не "=", а какую-либо функцию
+            {
+                IsNumberTwo = false;
+                CalculateResult(CurrentFunction);
+                NumberOne = null;
+                NumberTwo = null;
+            }
+            if(NumberOne == null) //Позволяет определить, ввёл-ли бользователь число перед нажатием функции
+            {
+                if (ResultScoreboard_TextBox.Text.Length > 0) NumberOne = ResultScoreboard_TextBox.Text;
+                else
+                {
+                    MessageBox.Show("Введите число!", "Ошибка..", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            IsNumberTwo = true; //После нажатия на любую функцию, программа меняет своё взаимодействия на другое число
+            CurrentFunction = ((Button)sender).Content.ToString(); //Функция с кнопки
+            CalculateResult(CurrentFunction);
+        }
+
+        private void CalculateResult(string operation) // Метод вычисляющий результат согласно выбранной функции
+        {
+            string result = null;
+            switch (operation) //Обращение к классу Functions в соответствии с выбранной функцией
+            {
+                case "+": 
+                    result = Functions.Plus(NumberOne, NumberTwo);
+                    break;
+
+                case "-":
+                    result = Functions.Minus(NumberOne, NumberTwo);
+                    break;
+
+                case "×":
+                    result = Functions.Multiply(NumberOne, NumberTwo);
+                    break;
+
+                case "÷":
+                    result = Functions.Divide(NumberOne, NumberTwo);
+                    break;
+
+                case "%":
+                    result = Functions.Percent(NumberOne, NumberTwo);
+                    break;
+
+                case "√":
+                    result = Functions.Sqrt(NumberOne);
+                    IsNumberTwo = false;
+                    break;
+
+                case "x²":
+                    result = Functions.Pow(NumberOne);
+                    IsNumberTwo = false;
+                    break;
+                case "1/x":
+                    result = Functions.OneDev(NumberOne);
+                    IsNumberTwo = false;
+                    break;
+
+                default: break;
+            }
+            OutputResult(result, operation);
+            if(IsNumberTwo)
+            {
+                if (result != null) NumberOne = result; 
+            }
+            else
+            {
+                NumberOne = null;
+            }
+            IsDecimal = false;
+        }
+
+        private void OutputResult(string result, string operation) // Метод выводит в соответствующем формате историю действия в историческую строку
+        {
+            switch (operation)
+            {
+                case "√":
+                    if (NumberOne != null) textHistory.Text = "√" + NumberOne + " = ";
+                    break;
+
+                case "x²":
+                    if (NumberOne != null) textHistory.Text = NumberOne + "² = ";
+                    break;
+
+                case "1/x":
+                    if (NumberOne != null) textHistory.Text = "1/" + NumberOne + " = ";
+                    break;
+
+                default:
+                    {
+                        if (NumberTwo != null)
+                        {
+                            textHistory.Text = NumberOne + " " + operation + " " + NumberTwo + " = ";
+                        }
+                        else
+                        {
+                            if (NumberOne != null)
+                            {
+                                textHistory.Text = NumberOne + " " + operation + " ";
+                                break;
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            NumberTwo = null;
+            if(result != null)
+            {
+                ResultScoreboard_TextBox.Text = result;
+            }
+        }
+
+        private void Buttons_With_Official_Functions_Click(object sender, RoutedEventArgs e) // Обработчик нажатия на служебные функции
         {
             Button button = (Button)sender;
             switch (button.Content)
             {
-                case "+":
-                    Function = "+";
-                    NumberOne = TextBox_Scoreboard.Text; //Сохраняет первое число в NumberOne
-                    NumberTwo = "";
+                case "C": //Полное очищение
+                    ResultScoreboard_TextBox.Text = "";
+                    textHistory.Text = "";
+                    IsNumberTwo = false;
+                    CurrentFunction = null;
+                    NumberOne = null;
+                    NumberTwo = null;
+                    IsDecimal = false;
                     break;
-                case "-":
-                    Function = "-";
-                    NumberOne = TextBox_Scoreboard.Text;
-                    NumberTwo = "";
+                case "=": //Расчёт
+                    CalculateResult(CurrentFunction);
+                    IsNumberTwo = false;
+                    NumberOne = null;
+                    NumberTwo = null;
                     break;
-                case "÷":
-                    Function = "/";
-                    NumberOne = TextBox_Scoreboard.Text;
-                    NumberTwo = "";
-                    break;
-                case "×":
-                    Function = "*";
-                    NumberOne = TextBox_Scoreboard.Text;
-                    NumberTwo = "";
-                    break;
-                case "=":
-                    Respond();
-                    break;
-                case "→":
-                    if(TextBox_Scoreboard.Text.ToString()[TextBox_Scoreboard.Text.Length-1] == ',') //Позволяет определить, когда пользователь стирает запятую и перевести число в разряд целых
+                case "→": //BackSpace
+                    if(ResultScoreboard_TextBox.Text.Length <=0) //Предотвращает стирание пустой строки
                     {
-                        Decimal = false;
+                        return;
                     }
-                    TextBox_Scoreboard.Text = TextBox_Scoreboard.Text.Remove(TextBox_Scoreboard.Text.Length - 1);
-                    if (TextBox_Scoreboard.Text == "") //Если строка закончилась - пишет ноль.
-                        TextBox_Scoreboard.Text = "0";
+                    ResultScoreboard_TextBox.Text = ResultScoreboard_TextBox.Text.Substring(0, ResultScoreboard_TextBox.Text.Length - 1);
+                    SetNumber(ResultScoreboard_TextBox.Text);
                     break;
-                case "•":
-                    if(!Decimal) //Позволяет избежать установки 2-N запятых в числе
+                case "CE": // Очищение числа взаимодействия
+                    if (ResultScoreboard_TextBox.Text.Length <= 0)
                     {
-                        Decimal = true;
-                        TextBox_Scoreboard.Text += ",";
+                        return;
                     }
+                    ResultScoreboard_TextBox.Text = "";
+                    SetNumber(ResultScoreboard_TextBox.Text);
                     break;
-                case "CE": //Удаляет число находящееся в строке и переводит состояние Decemal в false.
-                    TextBox_Scoreboard.Text = "0";
-                    Decimal = false;
-                    break;
-                case "C":
-                    Decimal = false;
-                    NumberOne = "";
-                    NumberTwo = "";
-                    Function = "";
-                    TextBox_Scoreboard.Text = "0";
-                    break;
-                case "+/-":
-                    TextBox_Scoreboard.Text = (double.Parse(TextBox_Scoreboard.Text)*-1).ToString();
-                    break;
-
-            }
-        }
-        private void Respond()
-        {
-            //FastMemory = Number
-            if(NumberOne == "")
-            {
-                NumberOne = TextBox_Scoreboard.Text;
-            }
-            if (NumberTwo == "") //Позволяет произвести быстро действие с 1 числом (Самим-сабой), что бы не вводить такое же второе число
-            {                    //(Уберает ошибку с отсуцтвием второго числа)
-                NumberTwo = NumberOne;
-            }
-            switch (Function)
-            {
-                case "+":
-                    NumberOne = (double.Parse(NumberOne) + double.Parse(NumberTwo)).ToString();
- 
-                    break;
-                case "-":
-                    NumberOne = (double.Parse(NumberOne) - double.Parse(NumberTwo)).ToString();
- 
-                    break;
-                case "/":
-                    NumberOne = (double.Parse(NumberOne) / double.Parse(NumberTwo)).ToString();
-  
-                    break;
-                case "*":
-                    NumberOne = (double.Parse(NumberOne) * double.Parse(NumberTwo)).ToString();
-      
-                    break;
-            }
-            if (double.Parse(NumberOne) % 1 == 0) //Условие позволяет проверить, является ли результирующее число десятичным или нет
-            {
-                Decimal = false;
-            }
-            else
-            {
-                if (!Decimal) Decimal = true;
-            }
-            TextBox_Scoreboard.Text = NumberOne;
-        }
-
-
-        /*
-        private void Buttons_With_Primitive_Functions_Click(object sender, RoutedEventArgs e)
-        {
-            Button button = (Button)sender;
-            switch (button.Content)
-            {
-                case "+/-":
-                    double Number = double.Parse(TextBox_Scoreboard.Text);
-                    TextBox_Scoreboard.Text = (Number * -1).ToString();
-                    break;
-                case "•":
-                    if (!Decimal)
-                    {
-                        Button buttonTMP = new Button();
-                        buttonTMP.Content = ".";
-                        Print_New_Simbol_In_Scoreboard(buttonTMP, true);
-                        Decimal = true;
-                    }
-                    break;
-                case "÷":
-                    Function = "/";
-                    Update_Fast_Memory();
-                    break;
-                case "×":
-                    Function = "*";
-                    Update_Fast_Memory();
-                    break;
-                case "-":
-                    Function = "-";
-                    Update_Fast_Memory();
-                    break;
-                case "+":
-                    Function = "+";
-                    Update_Fast_Memory();
-                    break;
-                case "=":
-                    Check_Result();
-                    break;
-                case "→":
-                    TextBox_Scoreboard.Text = TextBox_Scoreboard.Text.Substring(TextBox_Scoreboard.Text.Length-1);
-                    break;
-                case "CE":
-                    TextBox_Scoreboard.Text = "0";
-                    break;
-                case "C":
-                    TextBox_Scoreboard.Text = "0";
-                    FastMemory = "";
-                    Decimal = false;
-                    Function = "";
-                    break;
-
             }
         }
 
-        private void Check_Result()
-        {
-            if (Function == "/" && TextBox_Scoreboard.Text == "0")
-            {
-                MessageBox.Show("Вы пытаетесь поделить на ноль!", "Ошибка..", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            else
-            {
-                if (FastMemory != "")
-                {
-                    //string value = new DataTable().Compute($"{FastMemory}{Function}{TextBox_Scoreboard.Text}", null).ToString();
-                    double ResultValue = 0;
-                    if(Function == "+")
-                    {
-                        ResultValue = double.Parse(FastMemory) + double.Parse(TextBox_Scoreboard.Text);
-                    }
-                    else if(Function == "-")
-                    {
-                        ResultValue = double.Parse(FastMemory) - double.Parse(TextBox_Scoreboard.Text);
-                    }
-                    else if(Function == "*")
-                    {
-                        ResultValue = double.Parse(FastMemory) * double.Parse(TextBox_Scoreboard.Text);
-                    }
-                    else if(Function == "/")
-                    {
-                        ResultValue = double.Parse(FastMemory) / double.Parse(TextBox_Scoreboard.Text);
-                    }
-
-
-                    if (ResultValue % 1 == 0)
-                    {
-                        if (Decimal) Decimal = false;
-                        TextBox_Scoreboard.Text = ResultValue.ToString();
-                    }
-                    else
-                    {
-                        if (!Decimal) Decimal = true;
-                        string ResultValueString = ResultValue.ToString().Replace(",", ".");
-                        TextBox_Scoreboard.Text = ResultValueString;
-                    }
-                    TestTextBoxDecimal.Text = Decimal.ToString();
-                }
-            }
-        }
-
-
-        private void Buttons_With_Numbers_Click(object sender, RoutedEventArgs e)
-        {
-            Button button = (Button)sender;
-            Print_New_Simbol_In_Scoreboard(button);
-        }
-        private void Print_New_Simbol_In_Scoreboard(Button button, bool DecimalSeparator = false)
-        {
-            if (Function == "")
-            {
-                if (TextBox_Scoreboard.Text == "0" && !DecimalSeparator)
-                {
-                    if (button.Content == "0")
-                    {
-
-                    }
-                    else
-                    {
-                        TextBox_Scoreboard.Text = button.Content.ToString();
-                    }
-                }
-                else
-                {
-                    TextBox_Scoreboard.Text += button.Content.ToString();
-
-                }
-            }
-            
-        }
-        private void Update_Fast_Memory()
-        {
-            if (FastMemory == "")
-            {
-                FastMemory = TextBox_Scoreboard.Text.ToString();
-                Decimal = false;
-                TextBox_Scoreboard.Text = "0";
-            }
-            else if(FastMemory != "")
-            {
-                Check_Result();
-            }
-        }
-        */
     }
 }
