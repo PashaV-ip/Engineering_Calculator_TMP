@@ -16,19 +16,16 @@ using System.Windows.Shapes;
 
 namespace Engineering_Calculator
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        #region Свойства
-        private bool IsDecimal = false; // Переменная определяющая - является ли число десятичным
-        private bool IsNumberTwo = false; // Переменная определяющая - какое число вводит пользователь (Второе или первое) true - второе, false - первое
+        #region
+        private bool IsDecimal = false;
+        private bool IsNumberTwo = false;
 
-        private string NumberOne = null; // Число номер 1
-        private string NumberTwo = null; // Число номер 2
+        private string NumberOne = null;
+        private string NumberTwo = null;
 
-        private string CurrentFunction = ""; //Содержит функцию, которую нажал пользователь
+        private string CurrentFunction = "";
         #endregion
         public MainWindow()
         {
@@ -37,7 +34,7 @@ namespace Engineering_Calculator
 
 
 
-        private void AddNumber(string txt) // Метод добавляет в нужное число и строку результата символы из атрибута 'txt'
+        private void AddNumber(string txt)
         {
             if (IsNumberTwo)
             {
@@ -50,7 +47,7 @@ namespace Engineering_Calculator
                 ResultScoreboard_TextBox.Text = NumberOne;
             }
         }
-        private void SetNumber(string txt) // Метод ставит в нужное число и строку результата символы из атрибута 'txt'
+        private void SetNumber(string txt)
         {
             if (IsNumberTwo)
             {
@@ -63,26 +60,26 @@ namespace Engineering_Calculator
                 ResultScoreboard_TextBox.Text = NumberOne;
             }
         }
-        private void Buttons_With_Numbers_Click(object sender, RoutedEventArgs e) //Обработчик нажатия на все кнопки, работающие с данным числом в результирующей строке, в том числе и цифры
+        private void Buttons_With_Numbers_Click(object sender, RoutedEventArgs e)
         {
-            var txt = ((Button)sender).Content.ToString(); //в переменную txt добавляется не сама кнопка, а текст с нажатой кнопки
+            var txt = ((Button)sender).Content.ToString();
             {
-                if(IsDecimal && txt == "•") // Предотвращает вторую запятую в числе
+                if(IsDecimal && txt == "•")
                 {
                     MessageBox.Show("Число десятичное!","Ошибка..", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                if(txt == "•") // Если пользователь нажал на точку и число не было десятичным, то число переводится в разряд десятичных и содержимое txt заменяется на ","
+                if(txt == "•")
                 {
                     IsDecimal = true;
                     txt = ",";
                 }
             }
 
-            if (txt == "+/-") // Если пользователь нажал на кнопку "+/-", то выполняется следующая часть кода
+            if (txt == "+/-")
             {
-                if (ResultScoreboard_TextBox.Text.Length > 0) //Проверка, если результирующее поле не пустое - то..
-                    if(ResultScoreboard_TextBox.Text[0] == '-') //Условие позволяет переводить число из отрицательного в положительный и обратно
+                if (ResultScoreboard_TextBox.Text.Length > 0)
+                    if(ResultScoreboard_TextBox.Text[0] == '-')
                     {
                         ResultScoreboard_TextBox.Text = ResultScoreboard_TextBox.Text.Substring(1, ResultScoreboard_TextBox.Text.Length - 1);
                     }
@@ -90,39 +87,22 @@ namespace Engineering_Calculator
                     {
                         ResultScoreboard_TextBox.Text = "-" + ResultScoreboard_TextBox.Text;
                     }
-                    //###########################################################################################################//
-                    //###                             (Почему нельзя использовать пример ниже)                                ###//
-                    //###########################################################################################################//
-                    //###                                                                                                     ###//
-                    //###    ResultScoreboard_TextBox.Text = (double.Parse(ResultScoreboard_TextBox.Text) * -1).ToString();   ###//
-                    //###                                                                                                     ###//
-                    //###########################################################################################################//
-                    //###                                                                                                     ###//
-                    //###   Данное условие позволяет избегать некоторых ошибок, например - (Данное действие можно выполнить   ###//
-                    //###   только если поле не пустое, но пользователь может написать запятую, а потом нажать "-", что       ###//
-                    //###   приведёт к крашу программы, а что бы не делать ещё больше разных условий, лучше применить         ###//
-                    //###   этот метод с условием "...if(ResultScoreboard_TextBox.Text[0] == '-')..." во избежание лишней     ###//
-                    //###   рутины с реализацией..                                                                            ###//
-                    //###                                                                                                     ###//
-                    //###########################################################################################################//
-
-
                 SetNumber(ResultScoreboard_TextBox.Text);
                 return;
             }
             AddNumber(txt);
         }
 
-        private void Buttons_With_Primitive_Functions_Click(object sender, RoutedEventArgs e) // Обработчик нажатия на математические функции
+        private void Buttons_With_Primitive_Functions_Click(object sender, RoutedEventArgs e)
         {
-            if (IsNumberTwo) //Условие позволяет произвести расчёт, если пользователь после ввода второго числа нажмёт не "=", а какую-либо функцию
+            if (IsNumberTwo)
             {
                 IsNumberTwo = false;
                 CalculateResult(CurrentFunction);
                 NumberOne = null;
                 NumberTwo = null;
             }
-            if(NumberOne == null) //Позволяет определить, ввёл-ли бользователь число перед нажатием функции
+            if(NumberOne == null)
             {
                 if (ResultScoreboard_TextBox.Text.Length > 0) NumberOne = ResultScoreboard_TextBox.Text;
                 else
@@ -132,15 +112,15 @@ namespace Engineering_Calculator
                 }
             }
 
-            IsNumberTwo = true; //После нажатия на любую функцию, программа меняет своё взаимодействия на другое число
-            CurrentFunction = ((Button)sender).Content.ToString(); //Функция с кнопки
+            IsNumberTwo = true; 
+            CurrentFunction = ((Button)sender).Content.ToString();
             CalculateResult(CurrentFunction);
         }
 
-        private void CalculateResult(string operation) // Метод вычисляющий результат согласно выбранной функции
+        private void CalculateResult(string operation)
         {
             string result = null;
-            switch (operation) //Обращение к классу Functions в соответствии с выбранной функцией
+            switch (operation)
             {
                 case "+": 
                     result = Functions.Plus(NumberOne, NumberTwo);
@@ -190,7 +170,7 @@ namespace Engineering_Calculator
             IsDecimal = false;
         }
 
-        private void OutputResult(string result, string operation) // Метод выводит в соответствующем формате историю действия в историческую строку
+        private void OutputResult(string result, string operation)
         {
             switch (operation)
             {
@@ -231,12 +211,12 @@ namespace Engineering_Calculator
             }
         }
 
-        private void Buttons_With_Official_Functions_Click(object sender, RoutedEventArgs e) // Обработчик нажатия на служебные функции
+        private void Buttons_With_Official_Functions_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
             switch (button.Content)
             {
-                case "C": //Полное очищение
+                case "C":
                     ResultScoreboard_TextBox.Text = "";
                     textHistory.Text = "";
                     IsNumberTwo = false;
@@ -245,21 +225,21 @@ namespace Engineering_Calculator
                     NumberTwo = null;
                     IsDecimal = false;
                     break;
-                case "=": //Расчёт
+                case "=":
                     CalculateResult(CurrentFunction);
                     IsNumberTwo = false;
                     NumberOne = null;
                     NumberTwo = null;
                     break;
-                case "→": //BackSpace
-                    if(ResultScoreboard_TextBox.Text.Length <=0) //Предотвращает стирание пустой строки
+                case "→":
+                    if(ResultScoreboard_TextBox.Text.Length <=0)
                     {
                         return;
                     }
                     ResultScoreboard_TextBox.Text = ResultScoreboard_TextBox.Text.Substring(0, ResultScoreboard_TextBox.Text.Length - 1);
                     SetNumber(ResultScoreboard_TextBox.Text);
                     break;
-                case "CE": // Очищение числа взаимодействия
+                case "CE":
                     if (ResultScoreboard_TextBox.Text.Length <= 0)
                     {
                         return;

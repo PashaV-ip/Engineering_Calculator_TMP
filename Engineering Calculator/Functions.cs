@@ -9,7 +9,6 @@ namespace Engineering_Calculator
 {
     public static class Functions
     {
-        //Тут думаю без коментариев
         public static string Plus(string num1, string num2)
         {
             double a;
